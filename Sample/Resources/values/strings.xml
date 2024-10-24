@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Recycler Calendar Example</string>
+    <string name="week_calendar">Week Calendar</string>
+    <string name="month_calendar">Month Calendar</string>
+    <string name="page_month_calendar">Page Calendar</string>
+    <string name="text_selected_date">Selected Date</string>
+    <string name="simple_calendar">Simple Calendar</string>
+    <string name="example">Example</string>
+    <string name="selection_mode">Selection Mode</string>
+    <string name="none">None</string>
+    <string name="single">Single</string>
+    <string name="multiple">Multiple</string>
+    <string name="range">Range</string>
+    <string name="vertical">Vertical</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="calendar_icon_license">Calendar Icon made by Freepik from www.flaticon.com</string>
+    <string name="infinite_calendar">Infinite Calendar</string>
+    <string name="text_orientation">Orientation</string>
+
+	<string name="viewpager_calendar">ViewPager Calendar</string>
+	<string name="vertical_calendar">Vertical Calendar</string>
+	<string name="infinite_recycler_calendar">Infinite Recycler Calendar</string>
+	<string name="simple_recycler_calendar">Simple Recycler Calendar</string>
+	<string name="horizontal_calendar">Horizontal Calendar</string>
+	<string name="ok">OK</string>
+	<string name="event_clicked">Event Clicked</string>
+</resources>
