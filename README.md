@@ -1,6 +1,6 @@
 
 
-# RecyclerCalendar.NetAndroid (Xamarin)
+# RecyclerCalendar for .Net Android (Xamarin)
   
 A DIY calendar generator library for Xamarin .Net Android. This is a C# port of RecyclerCalendarAndroid Kotlin library [RecyclerCalendarAndroid](https://github.com/tejpratap46/RecyclerCalendarAndroid)
 
