@@ -104,7 +104,7 @@ namespace Sample.Horizontal
             viewHolder.TextViewDay.Text = day;
             viewHolder.TextViewDate.Text = calendarItem.Date.ToString("dd");
 
-            viewHolder.ItemView.SetOnClickListener(new ClickListener(() =>
+            viewHolder.ItemView.SetOnClickListener(new OnClickListenerEvent(() =>
             {
                 _selectedDate = calendarItem.Date;
                 _dateSelectListener.OnDateSelected(calendarItem.Date);
@@ -144,20 +144,6 @@ namespace Sample.Horizontal
                 TextViewDate = itemView.FindViewById<TextView>(Resource.Id.textCalenderItemHorizontalDate)
                     ?? throw new InvalidOperationException("Required view textCalenderItemHorizontalDate not found");
             }
-        } 
-        private class ClickListener : Java.Lang.Object, View.IOnClickListener
-        {
-            private readonly Action _onClickAction;
-
-            public ClickListener(Action onClickAction)
-            {
-                _onClickAction = onClickAction;
-            }
-
-            public void OnClick(View v)
-            {
-                _onClickAction();
-            }
-        }
+        }  
     }
 }

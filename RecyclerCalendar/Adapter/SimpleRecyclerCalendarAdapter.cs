@@ -5,7 +5,8 @@ using AndroidX.Core.Content;
 using AndroidX.RecyclerView.Widget;
 using Com.TejPratapSingh.RecyclerCalendar.Model;
 using Com.TejPratapSingh.RecyclerCalendar.Utilities;
-using System;
+using static AndroidX.RecyclerView.Widget.RecyclerView;
+using static Com.TejPratapSingh.RecyclerCalendar.Model.SimpleRecyclerCalendarConfiguration;
 
 namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
 {
@@ -38,13 +39,13 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
             _configuration = configuration;
         }
 
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
+        public override ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
             var view = LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.item_simple_calendar, parent, false)!;
             return new SimpleCalendarViewHolder(view);
         }
 
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, RecyclerCalenderViewItem calendarItem)
+        public override void OnBindViewHolder(ViewHolder holder, int position, RecyclerCalenderViewItem calendarItem)
         {
             var simpleViewHolder = (SimpleCalendarViewHolder)holder;
             var context = simpleViewHolder.ItemView.Context!;
@@ -53,24 +54,17 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
             ResetViewHolder(simpleViewHolder);
 
             if (calendarItem.IsHeader)
-            {
                 BindHeaderItem(simpleViewHolder, calendarItem, context);
-            }
             else if (calendarItem.IsEmpty)
-            {
                 BindEmptyItem(simpleViewHolder);
-            }
             else
-            {
                 BindCalendarItem(simpleViewHolder, calendarItem, context);
-            }
         }
 
         private void ResetViewHolder(SimpleCalendarViewHolder simpleViewHolder)
         {
             simpleViewHolder.ItemView.Visibility = ViewStates.Visible;
-            simpleViewHolder.ItemView.Click -= ItemView_Click!;
-
+            simpleViewHolder.ItemView.SetOnClickListener(null);
             HighlightDate(simpleViewHolder, Position.None);
 
             var context = simpleViewHolder.ItemView.Context!;
@@ -109,24 +103,25 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
 
             switch (_configuration.CurrentSelectionMode)
             {
-                case SimpleRecyclerCalendarConfiguration.SelectionModeSingle selectionModeSingle:
+                case SelectionModeSingle selectionModeSingle:
                     BindSingleSelectionMode(simpleViewHolder, calendarItem, currentDateString, selectionModeSingle);
                     break;
-                case SimpleRecyclerCalendarConfiguration.SelectionModeMultiple selectionModeMultiple:
+                case SelectionModeMultiple selectionModeMultiple:
                     BindMultipleSelectionMode(simpleViewHolder, calendarItem, currentDateString, selectionModeMultiple);
                     break;
-                case SimpleRecyclerCalendarConfiguration.SelectionModeRange selectionModeRange:
+                case SelectionModeRange selectionModeRange:
                     BindRangeSelectionMode(simpleViewHolder, calendarItem, currentDateString, selectionModeRange);
                     break;
                 default:
-                    simpleViewHolder.ItemView.Click += (sender, e) => _dateSelectListener.OnDateSelected(calendarItem.Date);
+                    simpleViewHolder.ItemView.SetOnClickListener(new OnClickListenerEvent(() =>
+                    {
+                        _dateSelectListener.OnDateSelected(calendarItem.Date);
+                    }));
                     break;
             }
 
             if (_configuration.ViewType == RecyclerCalendarConfiguration.CalendarViewType.Horizontal)
-            {
                 SetHorizontalItemWidth(simpleViewHolder, context);
-            }
         }
 
         private void SetHorizontalItemWidth(SimpleCalendarViewHolder simpleViewHolder, Context context)
@@ -147,16 +142,14 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
                 string stringSelectedTimeFormat = CalendarUtils.DateStringFromFormat(_configuration.CalendarLocale, selectionModeSingle.SelectedDate, CalendarUtils.DbDateFormat) ?? "";
 
                 if (currentDateString == stringSelectedTimeFormat)
-                {
                     HighlightDate(simpleViewHolder, Position.Single);
-                }
 
-                simpleViewHolder.ItemView.Click += (sender, e) =>
+                simpleViewHolder.ItemView.SetOnClickListener(new OnClickListenerEvent(() =>
                 {
                     selectionModeSingle.SelectedDate = calendarItem.Date;
                     _dateSelectListener.OnDateSelected(calendarItem.Date);
                     NotifyDataSetChanged();
-                };
+                }));
             }
         }
 
@@ -167,46 +160,34 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
             string tomorrowDateString = selectedDate.AddDays(1).ToString("yyyyMMdd", new System.Globalization.CultureInfo(_configuration.CalendarLocale.ToString()!));
 
             if (selectionModeMultiple.SelectionStartDateList.ContainsKey(currentDateString))
-            {
                 SetMultipleSelectionHighlight(simpleViewHolder, selectionModeMultiple, yesterdayDateString, tomorrowDateString);
-            }
 
-            simpleViewHolder.ItemView.Click += (sender, e) =>
+            simpleViewHolder.ItemView.SetOnClickListener(new OnClickListenerEvent(() =>
             {
                 if (!selectionModeMultiple.SelectionStartDateList.ContainsKey(currentDateString))
-                {
                     selectionModeMultiple.SelectionStartDateList[currentDateString] = calendarItem.Date;
-                }
                 else
-                {
                     selectionModeMultiple.SelectionStartDateList.Remove(currentDateString);
-                }
+
                 _dateSelectListener.OnDateSelected(calendarItem.Date);
                 NotifyDataSetChanged();
-            };
+            }));
         }
 
         private void SetMultipleSelectionHighlight(SimpleCalendarViewHolder simpleViewHolder,
-            SimpleRecyclerCalendarConfiguration.SelectionModeMultiple selectionModeMultiple,
+            SelectionModeMultiple selectionModeMultiple,
             string yesterdayDateString, string tomorrowDateString)
         {
+            // Set Highlight background based on position of selected date
             if (selectionModeMultiple.SelectionStartDateList.ContainsKey(yesterdayDateString) &&
-                selectionModeMultiple.SelectionStartDateList.ContainsKey(tomorrowDateString))
-            {
-                HighlightDate(simpleViewHolder, Position.Middle);
-            }
-            else if (selectionModeMultiple.SelectionStartDateList.ContainsKey(yesterdayDateString))
-            {
-                HighlightDate(simpleViewHolder, Position.End);
-            }
-            else if (selectionModeMultiple.SelectionStartDateList.ContainsKey(tomorrowDateString))
-            {
-                HighlightDate(simpleViewHolder, Position.Start);
-            }
-            else
-            {
-                HighlightDate(simpleViewHolder, Position.Single);
-            }
+                selectionModeMultiple.SelectionStartDateList.ContainsKey(tomorrowDateString)) 
+                HighlightDate(simpleViewHolder, Position.Middle); 
+            else if (selectionModeMultiple.SelectionStartDateList.ContainsKey(yesterdayDateString)) 
+                HighlightDate(simpleViewHolder, Position.End); 
+            else if (selectionModeMultiple.SelectionStartDateList.ContainsKey(tomorrowDateString)) 
+                HighlightDate(simpleViewHolder, Position.Start); 
+            else 
+                HighlightDate(simpleViewHolder, Position.Single); 
         }
 
         private void BindRangeSelectionMode(SimpleCalendarViewHolder simpleViewHolder, RecyclerCalenderViewItem calendarItem, string currentDateString, SimpleRecyclerCalendarConfiguration.SelectionModeRange selectionModeRange)
@@ -221,38 +202,28 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
             if (selectedDateInt >= startDateInt && selectedDateInt <= endDateInt)
             {
                 if (selectedDateInt == startDateInt)
-                {
                     HighlightDate(simpleViewHolder, Position.Start);
-                }
                 else if (selectedDateInt == endDateInt)
-                {
                     HighlightDate(simpleViewHolder, Position.End);
-                }
                 else
-                {
                     HighlightDate(simpleViewHolder, Position.Middle);
-                }
             }
 
-            simpleViewHolder.ItemView.Click += (sender, e) =>
+            simpleViewHolder.ItemView.SetOnClickListener(new OnClickListenerEvent(() =>
             {
                 HandleRangeSelection(selectionModeRange, calendarItem.Date, selectedDateInt, startDateInt, endDateInt);
                 _dateSelectListener.OnDateSelected(calendarItem.Date);
                 NotifyDataSetChanged();
-            };
+            }));
         }
 
-        private void HandleRangeSelection(SimpleRecyclerCalendarConfiguration.SelectionModeRange selectionModeRange,
+        private void HandleRangeSelection(SelectionModeRange selectionModeRange,
             DateTime selectedDate, int selectedDateInt, int startDateInt, int endDateInt)
         {
             if (selectedDateInt < startDateInt)
-            {
                 selectionModeRange.SelectionStartDate = selectedDate;
-            }
             else if (selectedDateInt > endDateInt)
-            {
                 selectionModeRange.SelectionEndDate = selectedDate;
-            }
             else if (selectedDateInt > startDateInt && selectedDateInt < endDateInt)
             {
                 var startDate = selectionModeRange.SelectionStartDate;
@@ -260,11 +231,13 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
 
                 if ((startDate - selectedDate).TotalMilliseconds > (selectedDate - endDate).TotalMilliseconds)
                 {
-                    selectionModeRange.SelectionEndDate = selectedDate;
+                    // Selected date is closer to START date, so move start date
+                    selectionModeRange.SelectionStartDate = selectedDate;
                 }
                 else
                 {
-                    selectionModeRange.SelectionStartDate = selectedDate;
+                    // Selected date is closer to END date, so move end date
+                    selectionModeRange.SelectionEndDate = selectedDate;
                 }
             }
         }
@@ -311,7 +284,7 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
             monthViewHolder.TextViewDate.SetTextColor(new Android.Graphics.Color(ContextCompat.GetColor(context, Resource.Color.colorWhite)));
         }
 
-        private class SimpleCalendarViewHolder : RecyclerView.ViewHolder
+        private class SimpleCalendarViewHolder : ViewHolder
         {
             public View LayoutStartPadding { get; }
             public View LayoutEndPadding { get; }
@@ -329,11 +302,6 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
                 TextViewDay = itemView.FindViewById<TextView>(Resource.Id.textCalenderItemSimpleDay)!;
                 TextViewDate = itemView.FindViewById<TextView>(Resource.Id.textCalenderItemSimpleDate)!;
             }
-        }
-
-        private void ItemView_Click(object sender, EventArgs e)
-        {
-            // Event handler implementation if needed
         }
     }
 }

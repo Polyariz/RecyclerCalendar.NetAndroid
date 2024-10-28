@@ -31,14 +31,10 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
         private void InitializeCalendarDates(Calendar startCalendar, Calendar endCalendar,
             DateTime startDate, DateTime endDate, RecyclerCalendarConfiguration configuration)
         {
-            if (configuration.ViewType == RecyclerCalendarConfiguration.CalendarViewType.Horizontal)
-            {
-                InitializeHorizontalDates(startCalendar, endCalendar, startDate, endDate);
-            }
-            else
-            {
-                InitializeVerticalDates(startCalendar, endCalendar, startDate, endDate);
-            }
+            if (configuration.ViewType == RecyclerCalendarConfiguration.CalendarViewType.Horizontal) 
+                InitializeHorizontalDates(startCalendar, endCalendar, startDate, endDate); 
+            else 
+                InitializeVerticalDates(startCalendar, endCalendar, startDate, endDate); 
         }
 
         private void InitializeHorizontalDates(Calendar startCalendar, Calendar endCalendar, DateTime startDate, DateTime endDate)
@@ -145,7 +141,6 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
         }
 
         public override int ItemCount => _calendarItemList.Count;
-
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             OnBindViewHolder(holder, position, _calendarItemList[position]);
@@ -153,9 +148,11 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
 
         public abstract void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, RecyclerCalenderViewItem calendarItem);
 
-        public RecyclerCalenderViewItem GetItem(int position) =>
+        public RecyclerCalenderViewItem? GetItem(int position) =>
             position < _calendarItemList.Count ? _calendarItemList[position] : null;
-
+        /**
+        * Set LayoutManager of recycler view to GridLayoutManager with span of 7 (week)
+        */
         public override void OnAttachedToRecyclerView(RecyclerView recyclerView)
         {
             base.OnAttachedToRecyclerView(recyclerView);
@@ -196,18 +193,18 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
 
         public class MyHandlerThread : HandlerThread
         {
-            private Handler _handler;
+            private Handler _handler = null!;
 
             public MyHandlerThread(string name) : base(name) { }
 
             public void PostTask(Action task)
             {
-                _handler.Post(task);
+                _handler!.Post(task);
             }
 
             public void PrepareHandler()
             {
-                _handler = new Handler(Looper);
+                _handler = new Handler(Looper!);
             }
         }
     }

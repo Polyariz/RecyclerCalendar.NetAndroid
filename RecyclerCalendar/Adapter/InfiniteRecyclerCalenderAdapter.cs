@@ -77,7 +77,9 @@ namespace Com.TejPratapSingh.RecyclerCalendar.Adapter
                 )
             );
         }
-
+        /**
+        * Set LayoutManager of recycler view to GridLayoutManager with span of 7 (week)
+        */
         public override void OnAttachedToRecyclerView(RecyclerView recyclerView)
         {
             base.OnAttachedToRecyclerView(recyclerView);
