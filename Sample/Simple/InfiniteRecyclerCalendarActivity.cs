@@ -4,7 +4,6 @@ using AndroidX.AppCompat.Widget;
 using Com.TejPratapSingh.RecyclerCalendar.Adapter;
 using Com.TejPratapSingh.RecyclerCalendar.Model;
 using Com.TejPratapSingh.RecyclerCalendar.Views;
-using Google.Android.Material.Button;
 using Java.Util;
 
 namespace Sample.Simple
