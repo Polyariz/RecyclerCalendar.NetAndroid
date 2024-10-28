@@ -13,6 +13,9 @@
     <None Remove="Resources\values\colors.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="sample_images\.DS_Store" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.7.0.3" />
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.Common" Version="2.8.6" />
     <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.3.2.8" />
